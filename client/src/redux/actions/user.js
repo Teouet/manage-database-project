@@ -21,3 +21,9 @@ export const getAdminInfo = () => {
         type: Types.GET_ADMIN_INFO
     }
 }
+export const getAdminInfoSuccess = (result) => {
+    return {
+        type: Types.GET_ADMIN_INFO_SUCCESS,
+        result: result
+    }
+}

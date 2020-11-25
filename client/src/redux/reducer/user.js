@@ -3,7 +3,6 @@ const initState = {
     infoUser: {},
     loading: false,
     error: null,
-    adminInfo: {}
 }
 const userReducer = (state = initState, action) => {
     switch (action.type) {
@@ -15,9 +14,6 @@ const userReducer = (state = initState, action) => {
         }
         case (Types.GET_USER_INFO_FAILED): {
             return { ...state, error: action.error }
-        }
-        case (Types.GET_ADMIN_INFO): {
-            return { ...state, loading: true }
         }
         default: return state
     }

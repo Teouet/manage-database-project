@@ -12,7 +12,7 @@ const tradingReducer = (state = initState, action) => {
             return { ...state, loading: true, nameCheck: "" }
         }
         case (Types.CHECK_CARD_NUMBER_FAILED): {
-            return { ...state, loading: false }
+            return { ...state, loading: false, errorCheck: "Không tìm thấy số tài khoản!" }
         }
         case (Types.CHECK_CARD_NUMBER_SUCCESS): {
             return { ...state, nameCheck: action.nameCheck, loading: false, errorCheck: "" }

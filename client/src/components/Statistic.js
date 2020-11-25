@@ -6,29 +6,25 @@ import SwapHorizIcon from '@material-ui/icons/SwapHoriz';
 import CachedIcon from '@material-ui/icons/Cached';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { Pie, Bar } from 'react-chartjs-2';
-import { callApi } from "../axios";
 import { connect } from "react-redux";
+import { getAdminInfo } from "../redux/actions/user";
+import Modal from "./Modal";
+import { addString } from "../utils";
 
-const Statistic = ({ userReducer }) => {
-    const [info, setInfo] = useState({})
+const Statistic = ({ getAdminInfo = () => { }, adminReducer, typeAccount }) => {
     useEffect(() => {
-        async function fetchApi() {
-            let temp = await callApi({ url: "/admin/get-info" });
-            console.log("xxxx temp", temp)
-            setInfo(temp)
+        if (typeAccount === 2) {
+            getAdminInfo()
         }
-        if (userReducer.infoUser.typeAccount === 2) {
-            fetchApi()
-        }
-    }, [userReducer.infoUser.typeAccount])
-    console.log("xxx statistic", info);
-    const [chart, setChart] = useState("")
+    }, [getAdminInfo, typeAccount])
+    let month = new Date().getMonth();
+    const [chart, setChart] = useState("Trading")
     const data = {
-        labels: ['Red', 'Blue'],
+        labels: ['Phí', 'Đồ ăn'],
         datasets: [
             {
                 label: '# of Votes',
-                data: [2, 3],
+                data: [adminReducer.adminInfo.moneyTrading, adminReducer.adminInfo.moneyFood],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -45,21 +41,23 @@ const Statistic = ({ userReducer }) => {
         labels: ['1', '2', '3', '4', '5', '6', "7", "8", "9", "10", "11", "12"],
         datasets: [
             {
-                label: '# of Red Votes',
-                data: [12, 19, 3, 5, 2, 3],
+                label: chart,
+                data: adminReducer.adminInfo[chart],
                 backgroundColor: 'rgb(255, 99, 132)',
             },
         ],
     }
     return (
         <div style={{ width: "100%", padding: "0 32px" }}>
+            <Modal show={adminReducer.loading}>
+            </Modal>
             <Grid container spacing={3} style={{ display: "flex", justifyContent: "space-between", width: "100%", margin: "0px" }}>
                 <Grid item xs={3} style={{ backgroundColor: "#fff", padding: "15px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <AccountBalanceWalletOutlinedIcon style={{ marginLeft: "16px", color: "green", fontSize: "50px" }}></AccountBalanceWalletOutlinedIcon>
                         <div >
                             <div>Nhận được</div>
-                            <div style={{ fontWeight: 600, marginTop: "8px" }}>300,000 VND</div>
+                            <div style={{ fontWeight: 600, marginTop: "8px" }}>{adminReducer.adminInfo.moneyTrading ? addString((adminReducer.adminInfo.moneyTrading + adminReducer.adminInfo.moneyFood).toString()) : -1} VND</div>
                         </div>
                     </div>
                     <div style={{ padding: "8px" }}>
@@ -75,7 +73,7 @@ const Statistic = ({ userReducer }) => {
                         <SwapHorizIcon style={{ marginLeft: "16px", color: "orange", fontSize: "50px" }}></SwapHorizIcon>
                         <div >
                             <div>Số giao dịch</div>
-                            <div style={{ fontWeight: 600, marginTop: "8px" }}>3000</div>
+                            <div style={{ fontWeight: 600, marginTop: "8px" }}>{adminReducer.adminInfo.trading12Month ? adminReducer.adminInfo.trading12Month[month] : -1}</div>
                         </div>
                     </div>
                     <div style={{ padding: "8px" }}>
@@ -90,8 +88,8 @@ const Statistic = ({ userReducer }) => {
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <PersonAddIcon style={{ marginLeft: "16px", color: "#23ccef", fontSize: "50px" }}></PersonAddIcon>
                         <div >
-                            <div>Nhận được</div>
-                            <div style={{ fontWeight: 600, marginTop: "8px" }}>300,000 VND</div>
+                            <div>Số người đăng ký</div>
+                            <div style={{ fontWeight: 600, marginTop: "8px", marginLeft: "auto" }}>{adminReducer.adminInfo.user12Month ? adminReducer.adminInfo.user12Month[month] : -1}</div>
                         </div>
                     </div>
                     <div style={{ padding: "8px" }}>
@@ -112,7 +110,7 @@ const Statistic = ({ userReducer }) => {
                     <div style={{ display: "flex" }}>
                         <div style={{ textAlign: "center", fontSize: "24px" }}>Số tiền thu được 12 tháng gần nhất</div>
                         <FormControl variant="outlined" style={{ marginLeft: "auto", minWidth: "120px" }}>
-                            <InputLabel id="demo-simple-select-outlined-label">Age</InputLabel>
+                            <InputLabel id="demo-simple-select-outlined-label">Biểu đồ</InputLabel>
                             <Select
                                 value={chart}
                                 onChange={(event) => setChart(event.target.value)}
@@ -132,12 +130,12 @@ const Statistic = ({ userReducer }) => {
 }
 const mapStateToProps = (state) => {
     return {
-        userReducer: state.userReducer
+        adminReducer: state.adminReducer
     }
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        getAdminInfo: () => dispatch(getAdminInfo())
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Statistic)

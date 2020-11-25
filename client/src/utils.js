@@ -9,6 +9,17 @@ export const convertCardNumber = (cardNumber) => {
     }
     return result
 }
+export const addSpaceToTextField = (value) => {
+    console.log("xxx value", value)
+    let result = "";
+    for (let i = 0; i < value.length; i++) {
+        if (i % 4 === 0 && i !== 0 && i !== 15) {
+            result += " "
+        }
+        result += value[i]
+    }
+    return result
+}
 export const addSpaceToCardNumber = (cardNumber) => {
     let result = ""
     for (let i = 0; i < cardNumber.length; i++) {
@@ -24,7 +35,7 @@ export const calculatePrice = (mapFood) => {
     for (let ele in mapFood) {
         result += mapFood[ele].count * mapFood[ele].price
     }
-    return result * 1.05
+    return result
 }
 export const convertNumber = (string) => {
     let result = "";

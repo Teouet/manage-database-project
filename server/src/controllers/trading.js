@@ -14,7 +14,9 @@ tradingRouter.post("/add-trading", async (req, res) => {
     if (userSend) {
         const userReceive = await User.findOneAndUpdate({ cardNumber: addSpaceToCardNumber(req.body.cardNumber) }, { $inc: { money: req.body.money } });
         if (userReceive) {
-            await User.updateOne({ cardNumber: "9701 0000 0000 2612" }, { $inc: { money: 1.1 } })
+            if (userReceive.cardNumberReceive !== "9701 0000 0000 2612") {
+                await User.updateOne({ cardNumber: "9701 0000 0000 2612" }, { $inc: { money: 1.1 } })
+            }
             await User.updateOne({ _id: userSend.id }, { $inc: { money: - req.body.money - 1.1 } })
             let trading = new Trading({
                 date: new Date().getTime(),
@@ -38,7 +40,7 @@ tradingRouter.post("/get-trading", async (req, res) => {
         return res.status(401).json({ error: 'token missing or invalid' })
     }
     console.log(req.body.dateEnd, req.body.dateFrom, decodedToken.id)
-    Trading.find({ userSendId: decodedToken.id, date: { $lte: req.body.dateEnd, $gte: req.body.dateFrom }, cardNumberReceive: req.body.cardNumber })
+    Trading.find({ userSendId: decodedToken.id, date: { $lte: req.body.dateEnd, $gte: req.body.dateFrom }, cardNumberReceive: "9701 0000 0000 2612" })
         .then(result => {
             console.log("xxx ", result, result.length)
             res.json(result).end()

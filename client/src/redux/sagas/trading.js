@@ -19,9 +19,10 @@ function* getUserFullName() {
         try {
             let cardNumber = action.cardNumber
             let userState = yield select((state) => state.userReducer);
-            console.log("xxxxx ", userState, addSpaceToCardNumber(cardNumber))
+            console.log("xxxxx ", cardNumber)
 
             let userFullName = yield call(getUserFullNameFromCardNumber, cardNumber);
+            console.log("xxx userfullName", userFullName)
             if (userFullName !== "failed") {
                 yield put(checkCardNumberSuccess(userFullName))
             } else {

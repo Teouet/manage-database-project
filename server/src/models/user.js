@@ -33,6 +33,9 @@ const userSchema = new mongoose.Schema({
     date: {
         type: Number,
         required: true,
+    },
+    target: {
+        type: Number
     }
 })
 

@@ -1,5 +1,4 @@
 export const getTokenFrom = request => {
-    console.log(request.get('authorization'))
     const authorization = request.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
         return authorization.substring(7)

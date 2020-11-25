@@ -3,7 +3,7 @@ import Alert from "@material-ui/lab/Alert";
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { checkCardNumber, userTrading } from "../redux/actions/trading";
-import { addSpaceToCardNumber, addString, convertNumber } from "../utils";
+import { addSpaceToTextField, addString, convertNumber } from "../utils";
 import Modal from "./Modal";
 
 const Trading = ({ checkCardNumber, tradingReducer, userTrading, money, cardNumber }) => {
@@ -20,10 +20,25 @@ const Trading = ({ checkCardNumber, tradingReducer, userTrading, money, cardNumb
         type: ""
     })
     const handleOnChangeInput = (event, field) => {
-        setInput({
-            ...input,
-            [field]: event.target.value
-        })
+        if (field === "cardNumber") {
+            if (event.target.value.length <= 19) {
+                let tempString = event.target.value.replace(/ /g, "")
+                let regExp = /[^0-9]/g;
+                let temp = tempString.match(regExp);
+                if (!temp) {
+                    return setInput({
+                        ...input,
+                        cardNumber: addSpaceToTextField(tempString)
+                    });
+                }
+            }
+        } else {
+            setInput({
+                ...input,
+                [field]: event.target.value
+            })
+        }
+
     }
     const handleOnChangeMoney = (string) => {
         let number = convertNumber(string);
@@ -74,7 +89,7 @@ const Trading = ({ checkCardNumber, tradingReducer, userTrading, money, cardNumb
                     type: "money"
                 })
             }
-            if (cardNumber == addSpaceToCardNumber(input.cardNumber)) {
+            if (cardNumber === input.cardNumber) {
                 return setError({ errorMessage: "Bạn không thể gửi cho chính mình", type: "cardNumber2" })
             }
             if (!isError) {
@@ -96,11 +111,12 @@ const Trading = ({ checkCardNumber, tradingReducer, userTrading, money, cardNumb
                 <div style={{ marginRight: "20px", width: "150px" }}>Số tài khoản :</div>
                 <TextField
                     variant="outlined"
-                    type="number"
+                    type="text"
                     placeholder="Số tài khoản"
                     style={{ appearance: "none", width: "400px" }}
                     onChange={(event) => handleOnChangeInput(event, "cardNumber")}
                     error={error.type === "cardNumber" ? true : false}
+                    value={input.cardNumber}
                     InputProps={{
                         endAdornment: (
                             <Button style={

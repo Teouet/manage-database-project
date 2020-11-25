@@ -111,7 +111,7 @@ const SignUp = () => {
         })
     }
     const handleResign = () => {
-        return axios.post("http://localhost:8002/api/user", input)
+        return axios.post("http://localhost:8003/api/user", input)
             .then((res) => {
                 console.log("xxxxx status", res)
                 if (res.status === 200) {

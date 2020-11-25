@@ -24,7 +24,6 @@ const useStyles = makeStyles({
     },
 })
 const ControlTable = ({ fullName }) => {
-    console.log("xxxx full name ", fullName)
     const [anchorEl, setAnchorEl] = React.useState(null);
     const classes = useStyles();
     const handleClick = (event) => {
@@ -38,7 +37,7 @@ const ControlTable = ({ fullName }) => {
     return (
         <header className={classes.header}>
             <div className={classes.logo}>
-                <AccountBalance style={{ fontSize: "30px" }} color="primary"></AccountBalance>
+                <AccountBalance style={{ fontSize: "30px", cursor: "pointer" }} onClick={() => { history.push("/home"); window.location.reload() }} color="primary"></AccountBalance>
             </div>
             <div className={classes.rightHeader}>
             </div>

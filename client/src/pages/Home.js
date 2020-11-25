@@ -14,6 +14,7 @@ import Modal from '../components/Modal';
 import ListFood from '../components/ListFood';
 import AddFoodInfo from '../components/AddFoodInfo';
 import Statistic from '../components/Statistic';
+import StatisticUser from '../components/StatisticUser';
 const useStyles = makeStyles({
     mainLeft: {
         width: "270px",
@@ -132,7 +133,7 @@ const Home = ({ getUserInfo = () => { }, userState }) => {
                 <Grid item xs={10} className={classes.mainRight}>
                     <Switch>
                         <Route exact path="/home">
-                            <div>Hello</div>
+                            <StatisticUser target={userState.infoUser.target} moneyTrading={userState.infoUser.moneyTrading} moneyFood={userState.infoUser.moneyFood}></StatisticUser>
                         </Route>
                         <Route exact path={"/home/trading"}>
                             <Trading cardNumber={userState.infoUser.cardNumber} money={userState.infoUser.money}></Trading>
@@ -141,7 +142,7 @@ const Home = ({ getUserInfo = () => { }, userState }) => {
                             <HistoryTrading />
                         </Route>
                         <Route exact path="/home/order-food">
-                            <ListFood typeAccount={userState.infoUser.typeAccount}></ListFood>
+                            <ListFood typeAccount={userState.infoUser.typeAccount} money={userState.infoUser.money}></ListFood>
                         </Route>
                     </Switch>
                 </Grid>

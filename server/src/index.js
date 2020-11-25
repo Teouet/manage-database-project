@@ -29,8 +29,6 @@ app.use("/api/trading", tradingRouter)
 app.use("/api/food", foodRouter);
 app.post("/admin/get-info", async (req, res) => {
     let currentMonth = new Date(new Date().getFullYear(), new Date().getMonth()).getTime()
-    let countTradingMonth = await Trading.count({ date: { $gte: currentMonth } });
-    let moneyTrading = countTradingMonth * 1.1;
     let moneyFood = 0;
     let countTradingFoodMonth = await Trading.find({ cardNumberReceive: "9701 0000 0000 2612", date: { $gte: currentMonth } }, (err, data) => {
         data.forEach(el => {
@@ -41,32 +39,40 @@ app.post("/admin/get-info", async (req, res) => {
     let trading12Month = [];
     let money12Month = [];
     for (let i = 0; i <= 11; i++) {
-        let tempMoney
         let month = new Date().getMonth() - i;
         console.log("xxx month", month)
         let time
-        if (month <= 0) {
-            month = 12 - month;
+        if (month < 0) {
+            month = 12 + month;
             time = new Date(new Date().getFullYear() - 1, month).getTime()
         } else {
             time = new Date(new Date().getFullYear(), month).getTime();
         }
-        console.log("xxx time", time)
+        console.log("xxx time", month)
         await User.count({ date: { $gte: time, $lte: time + Config.timeOneMonth } }, (err, data) => {
-            user12Month.push(data)
+            user12Month[month] = data
         })
         await Trading.count({ date: { $gte: time, $lte: time + Config.timeOneMonth } }, (err, data) => {
-            trading12Month.push(data)
+            trading12Month[month] = data
+        })
+        await Trading.find({ date: { $gte: time, $lte: time + Config.timeOneMonth } }, (err, data) => {
+            let moneyTemp = 0;
+            data.forEach(el => {
+                if (el.cardNumberReceive !== "9701 0000 0000 2612") {
+                    moneyTemp *= 1.1;
+                } else {
+                    moneyTemp += el.money
+                }
+            })
+            money12Month[month] = Math.round((moneyTemp * 1000) * 1000) / 1000
         })
     }
-    let countUserMonth = await User.count({ date: { $gte: currentMonth } })
     let result = {
-        trading: countTradingMonth,
-        user: countUserMonth,
-        moneyTrading: moneyTrading.toFixed(3),
-        moneyFood: moneyFood,
+        moneyTrading: Math.round((trading12Month[new Date().getMonth()] * 1000 * 1.1) * 1000) / 1000,
+        moneyFood: Math.round((moneyFood * 1000) * 1000) / 1000,
         user12Month: user12Month,
         trading12Month: trading12Month,
+        money12Month: money12Month
     }
     res.status(200).json(result).end()
 })

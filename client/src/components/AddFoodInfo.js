@@ -26,7 +26,7 @@ const AddFoodInfo = () => {
         for (let item in input) {
             form.append(`${item}`, input[item])
         }
-        axios.post("http://localhost:8002/api/food/add-food", form, {
+        axios.post("http://localhost:8003/api/food/add-food", form, {
             "headers": {
                 "Content-type": 'multipart/form-data'
             }

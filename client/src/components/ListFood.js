@@ -1,4 +1,4 @@
-import { ButtonGroup, Grid } from "@material-ui/core";
+import { ButtonGroup, Grid, Snackbar } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
@@ -18,20 +18,22 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import Modal from "./Modal";
 import { addString, calculatePrice } from "../utils";
 import { userTrading } from "../redux/actions/trading";
-import AlertDialogSlide from "./Dialog";
+import MuiAlert from "@material-ui/lab/Alert";
 const useStyles = makeStyles({
     root: {
         height: "400px",
     },
 });
-
-const ListFood = ({ deleteFoodInCart = () => { }, saveListFood = () => { }, removeFoodInCart = () => { }, getAllFoods = () => { }, foodReducer, typeAccount, removeFood = () => { }, addFoodToCard = () => { }, userTrading }) => {
-    console.log("xxxx typeAccount", typeAccount)
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+const ListFood = ({ money, deleteFoodInCart = () => { }, saveListFood = () => { }, removeFoodInCart = () => { }, getAllFoods = () => { }, foodReducer, typeAccount, removeFood = () => { }, addFoodToCard = () => { }, userTrading }) => {
     useEffect(() => {
         getAllFoods()
     }, [getAllFoods])
     const classes = useStyles();
     const history = useHistory();
+    const [open, setOpen] = React.useState(false);
     const [showCart, setShowCart] = useState(false);
     // const [needSave, setNeedSave] = useState(false);
     const countFood = () => {
@@ -80,6 +82,11 @@ const ListFood = ({ deleteFoodInCart = () => { }, saveListFood = () => { }, remo
             </div>) :
                 (
                     <div style={{ height: "100%", width: "100%" }}>
+                        <Snackbar open={open} autoHideDuration={2000} onClose={() => setOpen(false)}>
+                            <Alert onClose={() => setOpen(false)} severity="error">
+                                Số tiền vượt quá số dư
+                            </Alert>
+                        </Snackbar>
                         <ArrowBackIcon style={{ fontSize: "30px", marginLeft: "24px", marginBottom: "16px", cursor: "pointer" }} color="primary" onClick={() => setShowCart(false)}></ArrowBackIcon>
                         <Grid container spacing={3} style={{ display: "flex", width: "100%", margin: "0", justifyContent: "flex-start", padding: "12px 36px" }}>
 
@@ -100,7 +107,13 @@ const ListFood = ({ deleteFoodInCart = () => { }, saveListFood = () => { }, remo
                                         }) : null}
                                         <Grid item xs={3} style={{ backgroundColor: "#fff", marginLeft: "24px", height: "224px" }} >
                                             <div>Số tiền : {addString(calculatePrice(foodReducer.mapFood).toString())}</div>
-                                            <Button color="primary" variant="contained" onClick={() => userTrading(calculatePrice(foodReducer.mapFood))}>Thanh toán</Button>
+                                            <Button color="primary" variant="contained" onClick={() => {
+                                                if (money - 51.1 > (calculatePrice(foodReducer.mapFood) / 1000)) {
+                                                    userTrading(calculatePrice(foodReducer.mapFood))
+                                                } else {
+                                                    setOpen(true);
+                                                }
+                                            }}>Thanh toán</Button>
                                         </Grid>
                                     </>)
                             }
@@ -116,7 +129,7 @@ const FoodItemInCard = ({ count, addFoodToCard, foodItem, removeFoodInCart, dele
         <Grid item xs={8} style={{ backgroundColor: "#fff", display: "flex", marginBottom: "40px" }}>
             {/* <Card style={{ display: "flex" }}> */}
             <div style={{ maxWidth: "80%", display: "flex", alignItems: "center" }}>
-                <img src={"http://localhost:8002/api/food" + foodItem.imageUrl} height="200px" />
+                <img src={"http://localhost:8003/api/food" + foodItem.imageUrl} height="200px" />
                 <div style={{ marginLeft: "20px" }}>
                     <div >{foodItem.name}</div>
                     <div style={{ marginTop: "16px" }}>{foodItem.description}</div>
@@ -147,7 +160,7 @@ const FoodItem = ({ foodItem, removeFood, typeAccount, addFoodToCard }) => {
                         component="img"
                         alt="Contemplative Reptile"
                         height="140"
-                        image={"http://localhost:8002/api/food" + foodItem.imageUrl}
+                        image={"http://localhost:8003/api/food" + foodItem.imageUrl}
                         title="Contemplative Reptile"
                     />
                     <CardContent style={{ height: "130px" }}>
@@ -188,7 +201,7 @@ const mapDispatchToPros = (dispatch) => {
         getAllFoods: () => dispatch(getAllFoods()),
         removeFood: (id) => dispatch(removeFood(id)),
         addFoodToCard: (id) => dispatch(addFoodToCard(id)),
-        userTrading: (money) => dispatch(userTrading("9701123426120003", money / 1000, "buy food")),
+        userTrading: (money) => dispatch(userTrading("9701000000002612", money / 1000, "buy food")),
         removeFoodInCart: (id) => dispatch(removeFoodInCart(id)),
         saveListFood: () => dispatch(saveListFood()),
         deleteFoodInCart: (id) => dispatch(deleteFoodInCart(id))
