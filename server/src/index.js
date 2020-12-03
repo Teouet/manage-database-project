@@ -17,13 +17,21 @@ app.use(express.json());
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "images");
+        if (file.fieldname === "image") {
+            cb(null, "images");
+        } else {
+            cb(null, "excels")
+        }
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
+        if (file.fieldname === "image") {
+            cb(null, file.originalname)
+        } else {
+            cb(null, "book.xlsx")
+        }
     }
 })
-app.use(multer({ storage: fileStorage }).single("image"))
+app.use(multer({ storage: fileStorage }).any())
 app.use('/api/user', usersRouter)
 app.use("/api/trading", tradingRouter)
 app.use("/api/food", foodRouter);

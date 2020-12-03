@@ -58,3 +58,9 @@ input::-webkit-inner-spin-button {
   top: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }
+.MuiInputLabel-outlined.MuiInputLabel-shrink {
+  transform: translate(0, -6px) !important;
+  font-size: 12px;
+  margin: 0 14px;
+  background-color: #f4f6f8;
+}
